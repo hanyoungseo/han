@@ -1,0 +1,4 @@
+# Reverse a given string
+text = "Python"
+reversed_text = text[::-1]
+print(f"The reverse of '{text}' is '{reversed_text}'.")
