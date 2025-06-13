@@ -1,0 +1,20 @@
+# file_organizer.py
+import os
+import shutil
+
+source_folder = "./"  # 현재 폴더
+target_folders = {
+    ".jpg": "images",
+    ".png": "images",
+    ".txt": "documents",
+    ".pdf": "documents"
+}
+
+for filename in os.listdir(source_folder):
+    name, ext = os.path.splitext(filename)
+    if ext in target_folders:
+        target_dir = target_folders[ext]
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
+        shutil.move(filename, os.path.join(target_dir, filename))
+        print(f"Moved {filename} to {target_dir}/")
