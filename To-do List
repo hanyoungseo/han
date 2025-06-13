@@ -1,0 +1,28 @@
+<!-- todo.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple To-Do List</title>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <input id="taskInput" type="text" placeholder="New task">
+    <button onclick="addTask()">Add</button>
+    <ul id="taskList"></ul>
+
+    <script>
+        function addTask() {
+            const taskInput = document.getElementById("taskInput");
+            const taskText = taskInput.value;
+            if (taskText === "") return;
+
+            const li = document.createElement("li");
+            li.textContent = taskText;
+            li.onclick = () => li.remove();
+            document.getElementById("taskList").appendChild(li);
+
+            taskInput.value = "";
+        }
+    </script>
+</body>
+</html>
