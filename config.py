@@ -1,0 +1,3 @@
+GAME_TITLE = "Fishing RPG Prototype"
+START_MONEY = 1000
+DEBT_AMOUNT = 5000
