@@ -1,0 +1,38 @@
+import paho.mqtt.client as mqtt
+import json
+import time
+import random
+
+BROKER = "test.mosquitto.org"
+TOPIC = "smartfarm/sensor"
+
+def on_message(client, userdata, message):
+    data = json.loads(message.payload.decode())
+    print(f"[Subscriber] Received: {data}")
+
+def publisher():
+    client = mqtt.Client()
+    client.connect(BROKER)
+    while True:
+        payload = {
+            "temperature": round(random.uniform(18, 30), 2),
+            "humidity": round(random.uniform(40, 90), 2),
+            "timestamp": time.time()
+        }
+        client.publish(TOPIC, json.dumps(payload))
+        print(f"[Publisher] Sent: {payload}")
+        time.sleep(2)
+
+def subscriber():
+    client = mqtt.Client()
+    client.on_message = on_message
+    client.connect(BROKER)
+    client.subscribe(TOPIC)
+    client.loop_forever()
+
+if __name__ == "__main__":
+    mode = input("publisher / subscriber 선택: ").strip()
+    if mode == "publisher":
+        publisher()
+    else:
+        subscriber()
