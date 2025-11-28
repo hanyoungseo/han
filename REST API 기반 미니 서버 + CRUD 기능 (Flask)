@@ -1,0 +1,63 @@
+from flask import Flask, request, jsonify
+from datetime import datetime
+import uuid
+import json
+import os
+
+app = Flask(__name__)
+
+DATA_FILE = "database.json"
+
+def load_db():
+    if not os.path.exists(DATA_FILE):
+        return {}
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_db(data):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+@app.route("/sensor", methods=["POST"])
+def add_sensor_data():
+    db = load_db()
+    entry_id = str(uuid.uuid4())
+    payload = request.json
+    payload["timestamp"] = datetime.now().isoformat()
+    db[entry_id] = payload
+    save_db(db)
+    return jsonify({"id": entry_id, "message": "Sensor data added successfully"})
+
+@app.route("/sensor/<entry_id>", methods=["GET"])
+def get_sensor_data(entry_id):
+    db = load_db()
+    if entry_id not in db:
+        return jsonify({"error": "Not found"}), 404
+    return jsonify(db[entry_id])
+
+@app.route("/sensor/<entry_id>", methods=["PUT"])
+def update_sensor_data(entry_id):
+    db = load_db()
+    if entry_id not in db:
+        return jsonify({"error": "Not found"}), 404
+    db[entry_id].update(request.json)
+    save_db(db)
+    return jsonify({"message": "Updated successfully"})
+
+@app.route("/sensor/<entry_id>", methods=["DELETE"])
+def delete_sensor_data(entry_id):
+    db = load_db()
+    if entry_id not in db:
+        return jsonify({"error": "Not found"}), 404
+    del db[entry_id]
+    save_db(db)
+    return jsonify({"message": "Deleted successfully"})
+
+@app.route("/sensor/all", methods=["GET"])
+def list_all():
+    db = load_db()
+    return jsonify(db)
+
+if __name__ == "__main__":
+    print("🚀 Flask Sensor API Server Running on http://127.0.0.1:5000")
+    app.run(debug=True)
