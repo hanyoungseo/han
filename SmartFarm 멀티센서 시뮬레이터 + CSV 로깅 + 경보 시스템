@@ -1,0 +1,62 @@
+import csv
+import time
+import random
+from datetime import datetime
+
+THRESHOLDS = {
+    "temperature": (18, 30),
+    "humidity": (40, 85),
+    "co2": (350, 1500),
+    "soil": (20, 80)
+}
+
+LOG_FILE = "smartfarm_log.csv"
+
+def generate_sensor_data():
+    return {
+        "temperature": round(random.uniform(15, 35), 2),
+        "humidity": round(random.uniform(30, 95), 2),
+        "co2": round(random.uniform(300, 2000), 2),
+        "soil": round(random.uniform(10, 90), 2),
+        "timestamp": datetime.now().isoformat()
+    }
+
+def check_alerts(data):
+    alerts = []
+    for key, (low, high) in THRESHOLDS.items():
+        if data[key] < low or data[key] > high:
+            alerts.append(f"[ALERT] {key.upper()} out of range → {data[key]}")
+    return alerts
+
+def write_to_csv(data):
+    file_exists = False
+    try:
+        with open(LOG_FILE, "r", encoding="utf-8"):
+            file_exists = True
+    except:
+        pass
+
+    with open(LOG_FILE, "a", newline='', encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=data.keys())
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(data)
+
+def main():
+    print("🌱 SmartFarm Multi-Sensor Simulator Running...")
+    print("데이터는 smartfarm_log.csv 에 저장됩니다.\n")
+
+    while True:
+        data = generate_sensor_data()
+        write_to_csv(data)
+
+        print(f"DATA: {data}")
+        alerts = check_alerts(data)
+        for alert in alerts:
+            print(alert)
+
+        print("-" * 50)
+        time.sleep(2)
+
+if __name__ == "__main__":
+    main()
