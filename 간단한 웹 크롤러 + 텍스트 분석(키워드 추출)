@@ -1,0 +1,32 @@
+import requests
+from bs4 import BeautifulSoup
+from collections import Counter
+import re
+
+def fetch_text(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    paragraphs = soup.find_all(["p", "span"])
+    text = " ".join([p.get_text() for p in paragraphs])
+    return text
+
+def clean_text(text):
+    text = re.sub(r"[^가-힣a-zA-Z\s]", "", text)
+    words = text.split()
+    return [w.lower() for w in words if len(w) > 1]
+
+def extract_keywords(words, top_n=20):
+    return Counter(words).most_common(top_n)
+
+def main():
+    url = input("URL 입력: ")
+    print("크롤링 중...")
+    text = fetch_text(url)
+    words = clean_text(text)
+    keywords = extract_keywords(words)
+    print("\n===== 주요 키워드 =====")
+    for word, cnt in keywords:
+        print(f"{word}: {cnt}")
+
+if __name__ == "__main__":
+    main()
