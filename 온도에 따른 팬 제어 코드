@@ -1,0 +1,19 @@
+int temp = 30;
+int fanPin = 9;
+
+void setup() {
+  pinMode(fanPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (temp >= 28) {
+    digitalWrite(fanPin, HIGH);
+    Serial.println("Fan ON");
+  } else {
+    digitalWrite(fanPin, LOW);
+    Serial.println("Fan OFF");
+  }
+
+  delay(1000);
+}
