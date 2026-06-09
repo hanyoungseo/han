@@ -1,19 +1,62 @@
-int temp = 30;
 int fanPin = 9;
+int ledPin = 13;
+
+int temperature = 0;
+int fanState = LOW;
 
 void setup() {
   pinMode(fanPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+
   Serial.begin(9600);
+
+  digitalWrite(fanPin, LOW);
+  digitalWrite(ledPin, LOW);
+
+  Serial.println("Temperature Fan Control System Start");
 }
 
 void loop() {
-  if (temp >= 28) {
+  temperature = readTemperature();
+
+  Serial.print("Current Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" C");
+
+  if (temperature >= 30) {
+    fanState = HIGH;
     digitalWrite(fanPin, HIGH);
-    Serial.println("Fan ON");
-  } else {
+    digitalWrite(ledPin, HIGH);
+    Serial.println("Status: Fan ON");
+  } 
+  else if (temperature <= 27) {
+    fanState = LOW;
     digitalWrite(fanPin, LOW);
-    Serial.println("Fan OFF");
+    digitalWrite(ledPin, LOW);
+    Serial.println("Status: Fan OFF");
+  } 
+  else {
+    Serial.println("Status: Keep Previous Fan State");
   }
 
-  delay(1000);
+  printFanState();
+
+  delay(2000);
+}
+
+int readTemperature() {
+  int sensorValue = analogRead(A0);
+  int tempValue = map(sensorValue, 0, 1023, 20, 40);
+
+  return tempValue;
+}
+
+void printFanState() {
+  if (fanState == HIGH) {
+    Serial.println("Fan State: Running");
+  } else {
+    Serial.println("Fan State: Stopped");
+  }
+
+  Serial.println("-----------------------------");
 }
