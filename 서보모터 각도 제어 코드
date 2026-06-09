@@ -2,17 +2,49 @@
 
 Servo myServo;
 
+int servoPin = 9;
+int angle = 0;
+int stepValue = 10;
+
 void setup() {
-  myServo.attach(9);
+  myServo.attach(servoPin);
+  Serial.begin(9600);
+
+  myServo.write(0);
+
+  Serial.println("Servo Motor Control Start");
 }
 
 void loop() {
-  myServo.write(0);
+  rotateServoForward();
   delay(1000);
 
-  myServo.write(90);
+  rotateServoBackward();
   delay(1000);
+}
 
-  myServo.write(180);
-  delay(1000);
+void rotateServoForward() {
+  Serial.println("Servo Forward Rotation");
+
+  for (angle = 0; angle <= 180; angle += stepValue) {
+    myServo.write(angle);
+
+    Serial.print("Current Angle: ");
+    Serial.println(angle);
+
+    delay(300);
+  }
+}
+
+void rotateServoBackward() {
+  Serial.println("Servo Backward Rotation");
+
+  for (angle = 180; angle >= 0; angle -= stepValue) {
+    myServo.write(angle);
+
+    Serial.print("Current Angle: ");
+    Serial.println(angle);
+
+    delay(300);
+  }
 }
